@@ -1,7 +1,6 @@
 package backoff
 
 import (
-	"errors"
 	"time"
 )
 
@@ -56,10 +55,13 @@ func RetryNotifyWithTimer(operation Operation, b BackOff, notify Notify, t Timer
 			return nil
 		}
 
-		var permanent *PermanentError
-		if errors.As(err, &permanent) {
+		// var permanent *PermanentError
+		if permanent, ok := err.(*PermanentError); ok {
 			return permanent.Err
 		}
+		// if errors.As(err, &permanent) {
+		// 	return permanent.Err
+		// }
 
 		if next = b.NextBackOff(); next == Stop {
 			return err
